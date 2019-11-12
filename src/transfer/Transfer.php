@@ -4,6 +4,7 @@ require_once __DIR__ . './../serviceauthentication/DBConnection.php';
 require_once __DIR__ . './../serviceauthentication/ServiceAuthentication.php';
 
 use ServiceAuthentication;
+use DBConnection;
 
 class Transfer
 {
@@ -17,7 +18,14 @@ class Transfer
 
         $this->srcNumber = $srcNumber;
         $this->srcName = $srcName;
-        $this->service = $service;
+
+        if ($service == null) {
+            $this->service = ServiceAuthentication();
+        }
+
+        if ($dbConnection == null) {
+            $this->service = DBConnection();
+        }
     }
 
     public function doTransfer(string $targetNumber, float $amount)
