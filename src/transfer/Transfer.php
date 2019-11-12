@@ -14,4 +14,15 @@ class Transfer {
         $this->srcNumber = $srcNumber;
         $this->srcName = $srcName;
     }
+    
+    public function doTransfer(string $targetNumber, float $amount) {
+        $response = array("isError" => true);
+        
+        if (strlen($targetNumber) != 10 || !is_numeric($targetNumber)) {
+            $response["message"] = "หมายเลขบัญชีไม่ถูกต้อง";
+            return $response;
+        }
+
+        return $response;
+    }
 }
