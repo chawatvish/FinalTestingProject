@@ -1,11 +1,11 @@
-<?php namespace Operation;
+<?php namespace Stub;
 
-require_once __DIR__ . './../serviceauthentication/serviceauthentication.php';
+require_once __DIR__ . './../serviceauthentication/ServiceAuthentication.php';
 
 use AccountInformationException;
 use ServiceAuthentication;
 
-class StubServiceAuthentication implements ServiceAuthentication
+class StubServiceAuthentication extends ServiceAuthentication
 {
     public static function accountAuthenticationProvider(string $accNo): array
     {

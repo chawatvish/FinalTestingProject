@@ -20,11 +20,15 @@ class Transfer
         $this->srcName = $srcName;
 
         if ($service == null) {
-            $this->service = ServiceAuthentication();
+            $this->service = new ServiceAuthentication();
+        } else {
+            $this->service = $service;
         }
 
         if ($dbConnection == null) {
-            $this->service = DBConnection();
+            $this->dbConnection = new DBConnection();
+        } else {
+            $this->dbConnection = $dbConnection;
         }
     }
 
@@ -41,12 +45,12 @@ class Transfer
 
         try {
             // 1----  Check toAcctNo is aready set in system
-            $result = $service::accountAuthenticationProvider($targetNumber);
+            $result = $this->service::accountAuthenticationProvider($targetNumber);
             $acctNo = $result["accNo"];
             $toBal = floatval($result["accBalance"]);
 
             // 2----  withdraw from scrAcctNo
-            $result = $service::accountAuthenticationProvider($this->srcNumber);
+            $result = $this->service::accountAuthenticationProvider($this->srcNumber);
             $srcBal = floatval($result["accBalance"]);
 
             if ($srcBal < $amount) {
@@ -55,10 +59,10 @@ class Transfer
             }
 
             $srcBalAfter = $srcBal - $amount;
-            $dbConnection::saveTransaction($this->srcNumber, $srcBalAfter);
+            $this->dbConnection::saveTransaction($this->srcNumber, $srcBalAfter);
 
             $toBalAfter = $toBal + $amount;
-            $dbConnection::saveTransaction($targetNumber, $toBalAfter);
+            $this->dbConnection::saveTransaction($targetNumber, $toBalAfter);
 
             $response["isError"] = false;
             $response["message"] = $srcBalAfter;
