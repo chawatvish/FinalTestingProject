@@ -1,7 +1,6 @@
 <?php namespace Operation;
 
 require_once __DIR__ . './../serviceauthentication/DBConnection.php';
-require_once __DIR__ . './../serviceauthentication/StubServiceAuthentication.php';
 require_once __DIR__ . './../serviceauthentication/ServiceAuthentication.php';
 
 use ServiceAuthentication;
@@ -53,8 +52,8 @@ class Transfer
         $dbConnection::saveTransaction($targetNumber, $toBalAfter);
 
         $response["isError"] = false;
-        $response["message"] = $srcBalAfter; 
-        
+        $response["message"] = $srcBalAfter;
+
         return $response;
     }
 }
