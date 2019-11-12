@@ -9,5 +9,9 @@ use DBConnection;
 use ServiceAuthentication;
 
 class Transfer {
-    
+    private $srcNumber, $srcName;
+    public function __construct(string $srcNumber, string $srcName) {
+        $this->srcNumber = $srcNumber;
+        $this->srcName = $srcName;
+    }
 }
