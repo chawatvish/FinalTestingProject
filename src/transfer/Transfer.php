@@ -4,25 +4,57 @@ require_once __DIR__ . './../serviceauthentication/DBConnection.php';
 require_once __DIR__ . './../serviceauthentication/StubServiceAuthentication.php';
 require_once __DIR__ . './../serviceauthentication/ServiceAuthentication.php';
 
-use AccountInformationException;
-use DBConnection;
 use ServiceAuthentication;
 
-class Transfer {
+class Transfer
+{
     private $srcNumber, $srcName;
-    public function __construct(string $srcNumber, string $srcName) {
+    private $service, $dbConnection;
+
+    public function __construct(string $srcNumber,
+        string $srcName,
+        ServiceAuthentication $service,
+        DBConnection $dbConnection ) {
+
         $this->srcNumber = $srcNumber;
         $this->srcName = $srcName;
+        $this->service = $service;
     }
-    
-    public function doTransfer(string $targetNumber, float $amount) {
+
+    public function doTransfer(string $targetNumber, float $amount)
+    {
         $response = array("isError" => true);
-        
+        $srcBal = 0;
+        $toBal = 0;
+
         if (strlen($targetNumber) != 10 || !is_numeric($targetNumber)) {
             $response["message"] = "หมายเลขบัญชีไม่ถูกต้อง";
             return $response;
         }
 
+        // 1----  Check toAcctNo is aready set in system
+        $result = $service::accountAuthenticationProvider($targetNumber);
+        $acctNo = $result["accNo"];
+        $toBal = floatval($result["accBalance"]);
+
+        // 2----  withdraw from scrAcctNo
+        $result = $service::accountAuthenticationProvider($this->srcNumber);
+        $srcBal = floatval($result["accBalance"]);
+
+        if ($srcBal < $amount) {
+            $response["isError"] = true;
+            throw new AccountInformationException("ยอดเงินไม่เพียงพอ");
+        }
+
+        $srcBalAfter = $srcBal - $amount;
+        $dbConnection::saveTransaction($this->srcNumber, $srcBalAfter);
+
+        $toBalAfter = $toBal + $amount;
+        $dbConnection::saveTransaction($targetNumber, $toBalAfter);
+
+        $response["isError"] = false;
+        $response["message"] = $srcBalAfter; 
+        
         return $response;
     }
 }
