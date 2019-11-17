@@ -2,18 +2,21 @@
 
 require_once __DIR__ . './../serviceauthentication/AccountInformationException.php'; 
 require_once __DIR__ . './../serviceauthentication/ServiceAuthentication.php';
+require_once __DIR__ . './StubDeposit.php';
 
 use AccountInformationException;
 use ServiceAuthentication;
+use Stub\StubDeposit;
 
 class Transfer
 {
     private $srcNumber, $srcName;
-    private $service, $dbConnection;
+    private $service, $depositService;
 
     public function __construct(string $srcNumber,
         string $srcName,
-        ServiceAuthentication $service = null) {
+        ServiceAuthentication $service = null,
+        StubDeposit $depositService = null) {
 
         $this->srcNumber = $srcNumber;
         $this->srcName = $srcName;
@@ -22,6 +25,12 @@ class Transfer
             $this->service = new ServiceAuthentication();
         } else {
             $this->service = $service;
+        }
+
+        if ($depositService == null) {
+            // $this->service = new Deub();
+        } else {
+            $this->depositService = $depositService;
         }
     }
 
