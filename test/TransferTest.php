@@ -2,6 +2,8 @@
 
 include_once __DIR__ . "/../src/transfer/Transfer.php";
 include_once __DIR__ . "/../src/transfer/StubServiceAuthentication.php";
+include_once __DIR__ . "/../src/transfer/StubDeposit.php";
+include_once __DIR__ . "/../src/transfer/StubWithdrawal.php";
 
 use Operation\Transfer;
 use PHPUnit\Framework\TestCase;
