@@ -46,7 +46,6 @@ class Transfer
     {
         $response = array("isError" => true);
         $srcBal = 0;
-        $toBal = 0;
 
         if (strlen($targetNumber) != 10 || !is_numeric($targetNumber)) {
             $response["message"] = "หมายเลขบัญชีไม่ถูกต้อง";
@@ -54,14 +53,10 @@ class Transfer
         }
 
         try {
-            // 1----  Check toAcctNo is aready set in system
-            $result = $this->service::accountAuthenticationProvider($targetNumber);
-            $acctNo = $result["accNo"];
-            $toBal = floatval($result["accBalance"]);
-
-            // 2----  withdraw from scrAcctNo
+            $this->service::accountAuthenticationProvider($targetNumber);
+        
             $result = $this->service::accountAuthenticationProvider($this->srcNumber);
-            $srcBal = floatval($result["accBalance"]);
+            $srcBal = $result["accBalance"];
 
             if ($srcBal < $amount) {
                 $response["isError"] = true;
@@ -73,7 +68,10 @@ class Transfer
                 throw new Exception($withdrawalResult["message"]);
             }
 
-            
+            $depositResult = $this->depositService::doDeposit($targetNumber, $amount);
+            if ($depositResult["isError"] == true) {
+                throw new Exception($withdrawalResult["message"]);
+            }
 
             $srcBalAfter = $srcBal - $amount;
             $response["accNo"] = $this->srcNumber;
