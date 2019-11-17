@@ -42,7 +42,7 @@ class Transfer
         }
     }
 
-    public function doTransfer(string $targetNumber, float $amount)
+    public function doTransfer(string $targetNumber, string $amount)
     {
         $response = array("isError" => true);
         $srcBal = 0;
@@ -68,7 +68,7 @@ class Transfer
                 throw new AccountInformationException("ยอดเงินไม่เพียงพอ");
             }
 
-            $withdrawalResult = $this->withdrawalService::doWithdrawal($this->srcNumber, number_format($amount));
+            $withdrawalResult = $this->withdrawalService::doWithdrawal($this->srcNumber, $amount);
             if ($withdrawalResult["isError"] == true) {
                 throw new Exception($withdrawalResult["message"]);
             }
