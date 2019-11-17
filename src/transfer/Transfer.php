@@ -1,12 +1,10 @@
 <?php namespace Operation;
 
 require_once __DIR__ . './../serviceauthentication/AccountInformationException.php'; 
-require_once __DIR__ . './../serviceauthentication/DBConnection.php';
 require_once __DIR__ . './../serviceauthentication/ServiceAuthentication.php';
 
 use AccountInformationException;
 use ServiceAuthentication;
-use DBConnection;
 
 class Transfer
 {
@@ -15,8 +13,7 @@ class Transfer
 
     public function __construct(string $srcNumber,
         string $srcName,
-        ServiceAuthentication $service,
-        DBConnection $dbConnection) {
+        ServiceAuthentication $service = null) {
 
         $this->srcNumber = $srcNumber;
         $this->srcName = $srcName;
@@ -25,12 +22,6 @@ class Transfer
             $this->service = new ServiceAuthentication();
         } else {
             $this->service = $service;
-        }
-
-        if ($dbConnection == null) {
-            $this->dbConnection = new DBConnection();
-        } else {
-            $this->dbConnection = $dbConnection;
         }
     }
 
@@ -60,14 +51,16 @@ class Transfer
                 throw new AccountInformationException("ยอดเงินไม่เพียงพอ");
             }
 
+            // $this->dbConnection::saveTransaction($this->srcNumber, $srcBalAfter);
+
+            // $toBalAfter = $toBal + $amount;
+            // $this->dbConnection::saveTransaction($targetNumber, $toBalAfter);
+
             $srcBalAfter = $srcBal - $amount;
-            $this->dbConnection::saveTransaction($this->srcNumber, $srcBalAfter);
-
-            $toBalAfter = $toBal + $amount;
-            $this->dbConnection::saveTransaction($targetNumber, $toBalAfter);
-
+            $response["accNo"] = $this->srcNumber;
+            $response["accName"] = $this->srcName;
+            $response["accBalance"] = $srcBalAfter;
             $response["isError"] = false;
-            $response["message"] = $srcBalAfter;
         } catch (Exception $e) {
             $response["message"] = $e->getMessage();
         }
