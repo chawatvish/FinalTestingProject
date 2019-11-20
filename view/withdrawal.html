@@ -214,6 +214,8 @@
                         'ยอดเงินคงเหลือ = ' + result.updatedBalance + ' บาท',
                         'success'
                     )
+                    $("#accBalance").text(commaSeparateNumber(result.updatedBalance));
+                    $("#amount").val("");
                 }
             }).fail(function (xhr, status, error) {
                 swal(
