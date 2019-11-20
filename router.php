@@ -1,5 +1,5 @@
 <?php
-//include 'view/login.html';
+include 'view/login.html';
 
     $requestURI = $_SERVER["REQUEST_URI"];
     $filePath = __DIR__  . $requestURI;
@@ -39,14 +39,14 @@
         if($requestURI != "/main"){
           header("Location: /main");
         }
-        include 'view/main.html';
+        include '../view/main.html';
       }
     }
     else {
       if($requestURI != "/"){
         header("Location: /");
       }
-      include 'view/login.html';
+      include '../view/login.html';
     }
 
 ?>
