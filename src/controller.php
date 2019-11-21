@@ -5,11 +5,12 @@ ini_set("display_errors",PHP_ENV?"ON":"Off");
 
 require_once "../vendor/autoload.php";
 require_once "authentication/authentication.php";
-//require_once "withdraw/Withdrawal.php";
-require_once "deposit/DepositService.php";
-// require_once "transfer/transfer.php";
-//require_once "billpayment/billpayment.php";
+require_once "withdraw/Withdrawal.php";
+//require_once "deposit/DepositService.php";
+//require_once "transfer/transfer.php";
+require_once "billpayment/billpayment.php";
 require_once "serviceauthentication/serviceauthentication.php";
+require_once "serviceauthentication/DBConnection.php";
 
 use Operation\Authentication;
 use Operation\DepositService;
@@ -20,6 +21,23 @@ use Operation\BillPayment;
 $logFile = "../errorlog.txt";
 $service = $_POST["service"];
 $session = isset($_COOKIE["authentication"])?$_COOKIE["authentication"]:null;
+$serviceAuthentication = new ServiceAuthentication();
+$dbConnection = new DBConnection();
+
+function output2JSON($outputIns){
+    $response = array();
+    if (isset($outputIns->errorMessage)){
+      $response["isError"] = true;
+      $response["message"] = $outputIns->errorMessage;
+    }
+    else{
+      $response["isError"] = false;
+      $response["data"] = array_filter((array)$outputIns,"strlen");
+    }
+    return $response;
+}
+
+
 
 try{
   if ($service == "Authentication"){
@@ -29,6 +47,7 @@ try{
   }
   elseif($session)
   {
+	 
       if ($service == "Deposit"){
         // $result["isError"] = true;
         // try{
@@ -47,7 +66,7 @@ try{
       }
       elseif ($service == "Withdraw"){
         $transaction = $_POST["transaction"];
-        $withdrawal = new Withdrawal($session);
+        $withdrawal = new Withdrawal($session, $serviceAuthentication, $dbConnection);
         echo json_encode($withdrawal->withdraw($transaction["amount"]));
       }
       elseif ($service == "Transfer"){
@@ -58,12 +77,14 @@ try{
       elseif ($service == "BillPayment"){
         $transaction = $_POST["transaction"];
         $billPayment = new BillPayment($session);
-        echo json_encode($billPayment->pay($transaction["bill_type"]));
+        echo json_encode(output2JSON($billPayment->pay($transaction["bill_type"])));
+		//echo json_encode($billPayment->pay($transaction["bill_type"]));
       }
       elseif ($service == "BillPaymentInq"){
         $transaction = $_POST["transaction"];
         $billPayment = new BillPayment($session);
-        echo json_encode($billPayment->getBill($transaction["bill_type"]));
+        echo json_encode(output2JSON($billPayment->getBill($transaction["bill_type"])));
+		//echo json_encode($billPayment->getBill($transaction["bill_type"]));
       }
       elseif ($service == "ServiceAuthentication"){
         $result["isError"] = true;
@@ -74,7 +95,7 @@ try{
         catch(AccountInformationException $e){
           $result["message"] = $e->getMessage();
         }
-        echo json_encode($result);
+        echo json_encode ($result);
       }
       else{
         http_response_code(501);
