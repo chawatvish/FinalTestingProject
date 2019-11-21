@@ -2,7 +2,6 @@
 
 include_once 'ServiceType.php';
 include_once 'AccountInformationException.php';
-include_once 'BillingException.php';
 
 class DBConnection {
     public static function accountInformationProvider(): array {
