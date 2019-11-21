@@ -1,7 +1,7 @@
 <phpunit>
     <testsuites>
         <testsuite name="Deposit">
-            <directory suffix="DepositServiceTest.php">./test</directory>
+            <directory suffix="Test.php">test/Deposit</directory>
         </testsuite>
     </testsuites>
     <!--
