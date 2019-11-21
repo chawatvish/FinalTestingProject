@@ -3,7 +3,7 @@
 define("PHP_ENV",false);
 ini_set("display_errors",PHP_ENV?"ON":"Off");
 
-require_once "../vendor/autoload.php";
+//require_once "../vendor/autoload.php";
 require_once "authentication/authentication.php";
 require_once "withdraw/Withdrawal.php";
 //require_once "deposit/DepositService.php";
@@ -49,19 +49,8 @@ try{
   {
 	 
       if ($service == "Deposit"){
-        // $result["isError"] = true;
-        // try{
-        //   $result = ServiceAuthentication::accountAuthenticationProvider($session);
-        //   $result["isError"] = false;
-        // }
-        // catch(AccountInformationException $e){
-        //   $result["message"] = $e->getMessage();
-        // }
-        // echo json_encode($result);
-
         $transaction = $_POST["transaction"];
         $deposit = new DepositService($session);
-        // echo json_encode($result);
         echo json_encode($deposit->deposit($transaction["amount"]));
       }
       elseif ($service == "Withdraw"){
